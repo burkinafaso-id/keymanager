@@ -45,14 +45,14 @@ fi
 echo "Attempting to install"
 echo $DIR_NAME
 cd ./$DIR_NAME
-chmod +x install.sh
+chmod +x install-keygen.sh
 chmod +x cloudhsm-client_latest_u18.04_amd64.deb
 chmod +x libjson-c3_0.12.1-1.3ubuntu0.3_amd64.deb
 chmod +x openssl1.0_1.0.2n-1ubuntu5.10_amd64.deb
 chmod +x libedit2_3.1-20170329-1_amd64.deb
 chmod +x libssl1.0.0_1.0.2n-1ubuntu5_amd64.deb
 ls -ltr
-sudo ./install.sh $CLOUDHSM_IP_ADDRESS $ADDITIONAL_JARS
+sudo ./install-keygen.sh $CLOUDHSM_IP_ADDRESS $ADDITIONAL_JARS
 echo "Installation complete"
 cd $work_dir
 
