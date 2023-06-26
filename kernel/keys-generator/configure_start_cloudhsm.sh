@@ -27,7 +27,7 @@ CLOUDHSM_IP_ADDRESS=$cloudhsm_ip_address_env
 ADDITIONAL_JARS=$loader_path_env
 
 has_parent=$(zipinfo -1 "$FILE_NAME" | awk '{split($NF,a,"/");print a[1]}' | sort -u | wc -l)
-if test "$has_parent" -eq 1; then
+if test "$has_parent" -ge 1; then
   echo "Zip has a parent directory inside"
   dirname=$(zipinfo -1 "$FILE_NAME" | awk '{split($NF,a,"/");print a[1]}' | sort -u | head -n 1)
   echo "Unzip directory"
