@@ -9,6 +9,10 @@ LABEL commit_hash=${COMMIT_HASH}
 LABEL commit_id=${COMMIT_ID}
 LABEL build_time=${BUILD_TIME}
 
+RUN apt-get update \
+    && apt-get -y upgrade \
+    && apt-get -y install unzip
+
 # can be passed during Docker build as build time environment for github branch to pickup configuration from.
 ARG spring_config_label
 
@@ -30,17 +34,6 @@ ARG hsm_client_zip_path
 ARG hsm_local_dir=hsm-client
 
 ENV hsm_local_dir_name=${hsm_local_dir}
-
-# can be passed during Docker build as build time environment for CloudHSM IP Address
-ARG cloudhsm_ip_address
-
-ARG cloudhsm_keystore_impl_url
-
-# environment variable to pass cloudhsm_ip_address, at docker runtime
-ENV cloudhsm_ip_address_env=${cloudhsm_ip_address}
-
-# environment variable to pass KeyImplementation for cloudhsm, at docker runtime
-ENV cloudhsm_keystore_impl_url_env = ${cloudhsm_keystore_impl_url}
 
 # environment variable to pass active profile such as DEV, QA etc at docker runtime
 ENV active_profile_env=${active_profile}
@@ -71,18 +64,12 @@ RUN mkdir -p ${loader_path}
 
 ENV loader_path_env=${loader_path}
 
-ADD configure_start_cloudhsm.sh configure_start_cloudhsm.sh
+ADD configure_start.sh configure_start.sh
 
-RUN chmod +x configure_start_cloudhsm.sh
+RUN chmod +x configure_start.sh
 
 ADD target/keys-generator-*.jar keys-generator.jar
 
-RUN apt-get update \
-    && apt-get -y upgrade \
-    && apt-get -y install unzip \
-    && apt-get install -y unzip sudo\
-    && echo "%sudo ALL=(ALL) NOPASSWD:/${hsm_local_dir}/install.sh" >> /etc/sudoers
-
-ENTRYPOINT [ "/configure_start_cloudhsm.sh" ]
+ENTRYPOINT [ "/configure_start.sh" ]
 
 CMD ["java","-jar", "-Dloader.path=${loader_path_env}", "-Dspring.cloud.config.label=${spring_config_label_env}","-Dspring.cloud.config.name=${spring_config_name_env}", "-Dspring.profiles.active=${active_profile_env}", "-Dspring.cloud.config.uri=${spring_config_url_env}", "/keys-generator.jar"]
